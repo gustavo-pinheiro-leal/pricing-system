@@ -3,21 +3,37 @@ public with sharing class FreightHelper {
 
     public static void validateFreight(List<Freight__c> freightList){
         for(Freight__c freight : freightList){
-            if(!validateFreightParameters(freight)){
-                freight.addError('Parametros invalidos');
+
+            String message = '';
+
+            if(!validateFreightLocationParameters(freight)){
+                message += '-- Selecione UM pais OU UM estado OU UMA cidade';
+            }
+            if(!validateFreightProductParameters(freight)){
+                message += '-- Selecione UM produto OU UMA hierarquia de produto';
+            }
+
+            if(String.isNotEmpty(message)){
+                freight.addError(message);
             }
         }
     }
 
-    public static Boolean validateFreightParameters(Freight__c freight){
+    public static Boolean validateFreightProductParameters(Freight__c freight){
         if((String.isBlank(freight.ProductHierarchy__c) && String.isBlank(freight.Product__c)) ||
-            (String.isBlank(freight.Country__c) && String.isBlank(freight.State__c) && String.isBlank(freight.City__c)) ||
-            (String.isNotBlank(freight.ProductHierarchy__c) && String.isNotBlank(freight.Product__c)) ||
-            (String.isNotBlank(freight.Country__c) && String.isNotBlank(freight.State__c) && String.isNotBlank(freight.City__c)) ||
-            (String.isBlank(freight.Country__c) && String.isNotBlank(freight.State__c) && String.isNotBlank(freight.City__c)) ||
-            (String.isNotBlank(freight.Country__c) && String.isBlank(freight.State__c) && String.isNotBlank(freight.City__c)) ||
-            (String.isNotBlank(freight.Country__c) && String.isNotBlank(freight.State__c) && String.isBlank(freight.City__c))){
+           (String.isNotBlank(freight.ProductHierarchy__c) && String.isNotBlank(freight.Product__c))){
+            return false;
+        }
 
+        return true;
+    }
+
+    public static Boolean validateFreightLocationParameters(Freight__c freight){
+        if((String.isBlank(freight.Country__c) && String.isBlank(freight.State__c) && String.isBlank(freight.City__c)) ||
+        (String.isNotBlank(freight.Country__c) && String.isNotBlank(freight.State__c) && String.isNotBlank(freight.City__c)) ||
+        (String.isBlank(freight.Country__c) && String.isNotBlank(freight.State__c) && String.isNotBlank(freight.City__c)) ||
+        (String.isNotBlank(freight.Country__c) && String.isBlank(freight.State__c) && String.isNotBlank(freight.City__c)) ||
+        (String.isNotBlank(freight.Country__c) && String.isNotBlank(freight.State__c) && String.isBlank(freight.City__c))){
             return false;
         }
 
